@@ -360,6 +360,7 @@ var ADMIN_EMAIL = 'avrumy315@gmail.com';
 var el = function(id) { return document.getElementById(id); };
 
 var db = null;
+var mode = 'local';
 var adminVerified = false;
 var donations = [];
 
@@ -439,6 +440,17 @@ function recalcTotal() {
   totalRaised = donations.reduce(function(s, d) { return s + d.amount; }, 0);
 }
 
+async function loadApiData() {
+  try {
+    var r = await fetch('/api/config');
+    if (r.ok) { var c = await r.json(); config.companyName = c.companyName || config.companyName; if (typeof c.goalAmount === 'number') config.goalAmount = c.goalAmount; if (typeof c.message === 'string') config.message = c.message; }
+  } catch(e) {}
+  try {
+    var r2 = await fetch('/api/donations');
+    if (r2.ok) { var d = await r2.json(); donations = Array.isArray(d) ? d : []; recalcTotal(); }
+  } catch(e) {}
+}
+
 function show() {
   el('loading').hidden = true;
   el('main').hidden = false;
@@ -496,6 +508,21 @@ el('donateBtn').addEventListener('click', async function() {
       el('donateMsg').textContent = 'Could not process — please try again';
       el('donateMsg').className = 'donate-msg err';
     }
+  } else if (mode === 'api') {
+    try {
+      var res = await fetch('/api/donations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(donation) });
+      if (!res.ok) throw new Error();
+      var saved = await res.json();
+      donations.push(saved); recalcTotal(); renderGauge(); renderDonors();
+      el('donateMsg').textContent = 'Thank you, ' + name + '!';
+      el('donateMsg').className = 'donate-msg ok';
+      el('donateAmt').value = ''; el('donateName').value = ''; el('donateReason').value = '';
+      document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+      if (el('panel').classList.contains('open')) renderAdminDonations();
+    } catch (e) {
+      el('donateMsg').textContent = 'Could not process — please try again';
+      el('donateMsg').className = 'donate-msg err';
+    }
   } else {
     donation.id = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
     donations.push(donation);
@@ -525,6 +552,15 @@ document.addEventListener('click', async function(e) {
   if (db) {
     try {
       await db.doc('donations/' + id).delete();
+    } catch (e) {
+      btn.disabled = false;
+    }
+  } else if (mode === 'api') {
+    try {
+      var res = await fetch('/api/donations', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: id, adminEmail: ADMIN_EMAIL }) });
+      if (!res.ok) throw new Error();
+      donations = donations.filter(function(d) { return d.id !== id; });
+      recalcTotal(); renderGauge(); renderDonors(); renderAdminDonations();
     } catch (e) {
       btn.disabled = false;
     }
@@ -596,6 +632,17 @@ el('saveBtn').addEventListener('click', async function() {
     } catch (e) {
       el('saveMsg').textContent = 'Could not save — check permissions'; el('saveMsg').className = 'save-msg err';
     }
+  } else if (mode === 'api') {
+    try {
+      data.adminEmail = ADMIN_EMAIL;
+      var res = await fetch('/api/config', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      if (!res.ok) throw new Error();
+      Object.assign(config, await res.json()); renderGauge();
+      el('saveMsg').textContent = 'Saved successfully'; el('saveMsg').className = 'save-msg ok';
+      setTimeout(function() { el('saveMsg').textContent = ''; }, 2500);
+    } catch (e) {
+      el('saveMsg').textContent = 'Could not save — check permissions'; el('saveMsg').className = 'save-msg err';
+    }
   } else {
     Object.assign(config, data);
     try { localStorage.setItem('campaign_config', JSON.stringify(config)); } catch(e) {}
@@ -613,6 +660,7 @@ el('saveBtn').addEventListener('click', async function() {
   }
 
   if (db) {
+    mode = 'db';
     db.doc('config/campaign').onSnapshot(
       function(snap) {
         if (snap.exists) {
@@ -638,6 +686,20 @@ el('saveBtn').addEventListener('click', async function() {
       function() {}
     );
   } else {
+    try {
+      var testApi = await fetch('/api/config');
+      if (testApi.ok) {
+        mode = 'api';
+        await loadApiData();
+        renderGauge(); renderDonors(); show();
+        setInterval(async function() {
+          await loadApiData(); renderGauge(); renderDonors();
+          if (el('panel').classList.contains('open')) renderAdminDonations();
+        }, 15000);
+        return;
+      }
+    } catch(e) {}
+    mode = 'local';
     try { var r = localStorage.getItem('campaign_config'); if (r) Object.assign(config, JSON.parse(r)); } catch (e) {}
     try { var r2 = localStorage.getItem('donations'); if (r2) donations = JSON.parse(r2); } catch (e) {}
     recalcTotal(); renderGauge(); renderDonors(); show();
