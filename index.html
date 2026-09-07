@@ -6,6 +6,8 @@
 <title>Campaign Fund</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
 <style>
+[hidden] { display: none !important; }
+
 :root {
   --bg: #F5F0E6;
   --surface: #FFFFFF;
@@ -31,6 +33,8 @@
   --chip-bg: #F0EBE0;
   --chip-active: var(--accent);
   --donor-alt: #FAF7F2;
+  --danger: #D44A3A;
+  --danger-soft: #FDECEA;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -59,6 +63,8 @@
     --chip-bg: #1E2A33;
     --chip-active: var(--accent);
     --donor-alt: #1E272F;
+    --danger: #E85B4A;
+    --danger-soft: #2E1C1A;
   }
 }
 
@@ -87,532 +93,158 @@
   --chip-bg: #1E2A33;
   --chip-active: var(--accent);
   --donor-alt: #1E272F;
+  --danger: #E85B4A;
+  --danger-soft: #2E1C1A;
 }
 
 * { box-sizing: border-box; }
 
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--bg); color: var(--text);
   font-family: 'Nunito', system-ui, -apple-system, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  padding: 2.5rem 1rem 4rem;
-  margin: 0;
+  display: flex; flex-direction: column; align-items: center;
+  min-height: 100vh; padding: 2.5rem 1rem 4rem; margin: 0;
 }
 
 .container { max-width: 520px; width: 100%; }
 
-.ornament {
-  text-align: center;
-  margin: 0 0 1.5rem;
-  color: var(--text-3);
-  font-size: 1.2rem;
-  letter-spacing: 0.5em;
-  user-select: none;
-}
+.ornament { text-align: center; margin: 0 0 1.5rem; color: var(--text-3); font-size: 1.2rem; letter-spacing: 0.5em; user-select: none; }
 
 .company-name {
   font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
-  font-weight: 700;
-  font-size: clamp(2rem, 7vw, 3.2rem);
-  text-align: center;
-  color: var(--text);
-  line-height: 1.15;
-  text-wrap: balance;
-  margin: 0 0 0.35rem;
+  font-weight: 700; font-size: clamp(2rem, 7vw, 3.2rem);
+  text-align: center; color: var(--text); line-height: 1.15;
+  text-wrap: balance; margin: 0 0 0.35rem;
 }
 
 .campaign-label {
-  text-align: center;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin: 0 0 2.5rem;
+  text-align: center; font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 2.5rem;
 }
 
-/* Gauge */
-.gauge-wrap {
-  display: flex;
-  justify-content: center;
-  margin: 0 0 1.5rem;
-  position: relative;
-}
-
+.gauge-wrap { display: flex; justify-content: center; margin: 0 0 1.5rem; position: relative; }
 .gauge-svg { width: 270px; height: 270px; }
-
-.gauge-track-circle {
-  fill: none;
-  stroke: var(--track);
-  stroke-width: 16;
-}
-
-.gauge-fill-circle {
-  fill: none;
-  stroke: var(--fill);
-  stroke-width: 16;
-  stroke-linecap: round;
-  transform: rotate(-90deg);
-  transform-origin: 50% 50%;
-  transition: stroke-dasharray 1.4s cubic-bezier(0.23, 1, 0.32, 1), stroke 0.5s ease;
-}
-
-.gauge-fill-circle.complete {
-  stroke: var(--gold);
-  filter: drop-shadow(0 0 8px var(--gold-glow));
-}
-
-.gauge-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  pointer-events: none;
-}
-
-.raised-amount {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 700;
-  font-size: 2.8rem;
-  line-height: 1;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
-
+.gauge-track-circle { fill: none; stroke: var(--track); stroke-width: 16; }
+.gauge-fill-circle { fill: none; stroke: var(--fill); stroke-width: 16; stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dasharray 1.4s cubic-bezier(0.23,1,0.32,1), stroke 0.5s ease; }
+.gauge-fill-circle.complete { stroke: var(--gold); filter: drop-shadow(0 0 8px var(--gold-glow)); }
+.gauge-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; pointer-events: none; }
+.raised-amount { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 2.8rem; line-height: 1; color: var(--text); font-variant-numeric: tabular-nums; }
 .raised-label { font-size: 0.78rem; color: var(--text-2); font-weight: 600; margin-top: 0.2rem; }
 .goal-text { font-size: 0.82rem; color: var(--text-3); margin-top: 0.45rem; font-variant-numeric: tabular-nums; }
+.celebration { color: var(--gold); font-weight: 800; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.3rem; }
 
-.celebration {
-  color: var(--gold);
-  font-weight: 800;
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-top: 0.3rem;
-}
-
-/* Stats */
-.stats-row { display: flex; justify-content: center; gap: 2.5rem; margin: 0 0 2rem; }
+.stats-row { display: flex; justify-content: center; gap: 2rem; margin: 0 0 2rem; }
 .stat { text-align: center; }
+.stat-value { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 1.6rem; color: var(--text); font-variant-numeric: tabular-nums; }
+.stat-label { font-size: 0.7rem; color: var(--text-3); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.1rem; }
 
-.stat-value {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 700;
-  font-size: 1.6rem;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
-
-.stat-label {
-  font-size: 0.7rem;
-  color: var(--text-3);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-top: 0.1rem;
-}
-
-/* Progress bar */
-.progress-card {
-  background: var(--surface);
-  border-radius: 14px;
-  padding: 1.25rem 1.4rem;
-  box-shadow: var(--shadow-sm);
-  margin: 0 0 1.25rem;
-  border: 1px solid var(--border);
-}
-
+.progress-card { background: var(--surface); border-radius: 14px; padding: 1.25rem 1.4rem; box-shadow: var(--shadow-sm); margin: 0 0 1.25rem; border: 1px solid var(--border); }
 .progress-row { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 0.6rem; }
 .progress-pct { font-weight: 700; font-size: 0.9rem; color: var(--accent); }
 .progress-amounts { font-size: 0.78rem; color: var(--text-2); font-variant-numeric: tabular-nums; }
-
 .bar-bg { height: 10px; background: var(--track); border-radius: 5px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--gold)); border-radius: 5px; transition: width 1.4s cubic-bezier(0.23,1,0.32,1); min-width: 0; }
 
-.bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--gold));
-  border-radius: 5px;
-  transition: width 1.4s cubic-bezier(0.23, 1, 0.32, 1);
-  min-width: 0;
-}
-
-/* Donate card */
-.donate-card {
-  background: var(--surface);
-  border-radius: 14px;
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
-  margin: 0 0 1.25rem;
-}
-
-.donate-title {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 700;
-  font-size: 1.35rem;
-  color: var(--text);
-  text-align: center;
-  margin: 0 0 1.1rem;
-}
-
-.amount-chips {
-  display: flex;
-  gap: 0.5rem;
-  margin: 0 0 0.85rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.chip {
-  font-family: 'Nunito', system-ui, sans-serif;
-  font-size: 0.88rem;
-  font-weight: 700;
-  padding: 0.5rem 1rem;
-  border-radius: 10px;
-  border: 2px solid var(--border);
-  background: var(--chip-bg);
-  color: var(--text);
-  cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
-  font-variant-numeric: tabular-nums;
-}
-
+/* Donate */
+.donate-card { background: var(--surface); border-radius: 14px; padding: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin: 0 0 1.25rem; }
+.donate-title { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 1.35rem; color: var(--text); text-align: center; margin: 0 0 1.1rem; }
+.amount-chips { display: flex; gap: 0.5rem; margin: 0 0 0.85rem; flex-wrap: wrap; justify-content: center; }
+.chip { font-family: 'Nunito', system-ui, sans-serif; font-size: 0.88rem; font-weight: 700; padding: 0.5rem 1rem; border-radius: 10px; border: 2px solid var(--border); background: var(--chip-bg); color: var(--text); cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s; font-variant-numeric: tabular-nums; }
 .chip:hover { border-color: var(--accent); }
-
-.chip.active {
-  border-color: var(--chip-active);
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-.donate-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  margin: 0 0 1rem;
-}
-
-.donate-input {
-  font-family: 'Nunito', system-ui, sans-serif;
-  font-size: 0.95rem;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--input-border);
-  border-radius: 10px;
-  background: var(--input-bg);
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  width: 100%;
-}
-
-.donate-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-}
-
+.chip.active { border-color: var(--chip-active); background: var(--accent-soft); color: var(--accent); }
+.donate-fields { display: flex; flex-direction: column; gap: 0.65rem; margin: 0 0 1rem; }
+.donate-input { font-family: 'Nunito', system-ui, sans-serif; font-size: 0.95rem; padding: 0.6rem 0.8rem; border: 1px solid var(--input-border); border-radius: 10px; background: var(--input-bg); color: var(--text); outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; }
+.donate-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .donate-input::placeholder { color: var(--text-3); }
-
-.donate-btn {
-  font-family: 'Nunito', system-ui, sans-serif;
-  font-size: 1rem;
-  font-weight: 800;
-  padding: 0.75rem 1.5rem;
-  background: var(--warm);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
-  width: 100%;
-  letter-spacing: 0.02em;
-}
-
+.donate-input.err-border { border-color: var(--warm); }
+.donate-btn { font-family: 'Nunito', system-ui, sans-serif; font-size: 1rem; font-weight: 800; padding: 0.75rem 1.5rem; background: var(--warm); color: #fff; border: none; border-radius: 12px; cursor: pointer; transition: background 0.15s, transform 0.1s; width: 100%; letter-spacing: 0.02em; }
 .donate-btn:hover { background: var(--warm-hover); }
 .donate-btn:active { transform: scale(0.97); }
 .donate-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
-
-.donate-msg {
-  font-size: 0.82rem;
-  text-align: center;
-  min-height: 1.15em;
-  font-weight: 600;
-  margin-top: 0.5rem;
-}
-
+.donate-msg { font-size: 0.82rem; text-align: center; min-height: 1.15em; font-weight: 600; margin-top: 0.5rem; }
 .donate-msg.ok { color: var(--accent); }
 .donate-msg.err { color: var(--warm); }
 
-/* Donors list */
-.donors-card {
-  background: var(--surface);
-  border-radius: 14px;
-  padding: 1.25rem 1.4rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
-  margin: 0 0 1.25rem;
-}
-
-.donors-title {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--text);
-  margin: 0 0 0.75rem;
-}
-
-.donor-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.55rem 0.6rem;
-  border-radius: 8px;
-}
-
+/* Donors */
+.donors-card { background: var(--surface); border-radius: 14px; padding: 1.25rem 1.4rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border); margin: 0 0 1.25rem; }
+.donors-title { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 1.1rem; color: var(--text); margin: 0 0 0.75rem; }
+.donor-row { padding: 0.65rem 0.6rem; border-radius: 8px; }
 .donor-row:nth-child(even) { background: var(--donor-alt); }
-
-.donor-name { font-size: 0.88rem; color: var(--text-2); font-weight: 600; }
+.donor-top { display: flex; justify-content: space-between; align-items: center; }
+.donor-name { font-size: 0.88rem; color: var(--text); font-weight: 700; }
 .donor-amount { font-size: 0.88rem; color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+.donor-reason { font-size: 0.8rem; color: var(--text-2); margin-top: 0.2rem; line-height: 1.4; font-style: italic; }
 
-/* Message card */
-.message-card {
-  background: var(--surface);
-  border-radius: 14px;
-  padding: 1.4rem 1.5rem;
-  box-shadow: var(--shadow-sm);
-  border: 1px solid var(--border);
-  text-align: center;
-}
-
+/* Message */
+.message-card { background: var(--surface); border-radius: 14px; padding: 1.4rem 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border); text-align: center; }
 .message-card p { color: var(--text-2); font-size: 0.92rem; line-height: 1.65; margin: 0; }
 
-/* Settings button */
-.settings-btn {
-  position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-md);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-3);
-  transition: transform 0.25s, box-shadow 0.25s, color 0.2s;
-  z-index: 10;
-  padding: 0;
-}
-
-.settings-btn:hover, .settings-btn:focus-visible {
-  transform: scale(1.1);
-  box-shadow: var(--shadow-lg);
-  color: var(--text-2);
-  outline: none;
-}
-
+/* Settings gear */
+.settings-btn { position: fixed; bottom: 1.25rem; right: 1.25rem; width: 46px; height: 46px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow-md); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-3); transition: transform 0.25s, box-shadow 0.25s, color 0.2s; z-index: 10; padding: 0; }
+.settings-btn:hover, .settings-btn:focus-visible { transform: scale(1.1); box-shadow: var(--shadow-lg); color: var(--text-2); outline: none; }
 .settings-btn svg { width: 20px; height: 20px; }
 
 /* Email modal */
-.email-modal-bg {
-  position: fixed;
-  inset: 0;
-  background: var(--overlay);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.email-modal {
-  background: var(--surface);
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: var(--shadow-lg);
-  max-width: 340px;
-  width: 100%;
-  border: 1px solid var(--border);
-}
-
-.email-modal h3 {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: var(--text);
-  margin: 0 0 0.75rem;
-  text-align: center;
-}
-
-.email-modal-input {
-  font-family: 'Nunito', system-ui, sans-serif;
-  font-size: 0.95rem;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--input-border);
-  border-radius: 10px;
-  background: var(--input-bg);
-  color: var(--text);
-  outline: none;
-  width: 100%;
-  margin: 0 0 0.75rem;
-  transition: border-color 0.2s;
-}
-
+.email-modal-bg { position: fixed; inset: 0; background: var(--overlay); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.email-modal { background: var(--surface); border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow-lg); max-width: 340px; width: 100%; border: 1px solid var(--border); }
+.email-modal h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 1.2rem; color: var(--text); margin: 0 0 0.75rem; text-align: center; }
+.email-modal-input { font-family: 'Nunito', system-ui, sans-serif; font-size: 0.95rem; padding: 0.6rem 0.8rem; border: 1px solid var(--input-border); border-radius: 10px; background: var(--input-bg); color: var(--text); outline: none; width: 100%; margin: 0 0 0.75rem; }
 .email-modal-input:focus { border-color: var(--accent); }
 .email-modal-input::placeholder { color: var(--text-3); }
-
-.email-modal-btns {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.email-verify-btn {
-  flex: 1;
-  font-family: 'Nunito', system-ui, sans-serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  padding: 0.6rem;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-
+.email-modal-btns { display: flex; gap: 0.5rem; }
+.email-verify-btn { flex: 1; font-family: 'Nunito', system-ui, sans-serif; font-size: 0.9rem; font-weight: 700; padding: 0.6rem; background: var(--accent); color: #fff; border: none; border-radius: 10px; cursor: pointer; }
 .email-verify-btn:hover { opacity: 0.88; }
-
-.email-cancel-btn {
-  font-family: 'Nunito', system-ui, sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 0.6rem 1rem;
-  background: var(--chip-bg);
-  color: var(--text-2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
+.email-cancel-btn { font-family: 'Nunito', system-ui, sans-serif; font-size: 0.9rem; font-weight: 600; padding: 0.6rem 1rem; background: var(--chip-bg); color: var(--text-2); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; }
 .email-cancel-btn:hover { background: var(--border); }
+.email-err { font-size: 0.8rem; color: var(--warm); text-align: center; margin-top: 0.5rem; font-weight: 600; min-height: 1.1em; }
 
-.email-err {
-  font-size: 0.8rem;
-  color: var(--warm);
-  text-align: center;
-  margin-top: 0.5rem;
-  font-weight: 600;
-  min-height: 1.1em;
-}
-
-/* Settings overlay + panel */
-.s-overlay {
-  position: fixed; inset: 0; background: var(--overlay);
-  z-index: 100; opacity: 0; transition: opacity 0.3s; pointer-events: none;
-}
+/* Settings panel */
+.s-overlay { position: fixed; inset: 0; background: var(--overlay); z-index: 100; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
 .s-overlay.open { opacity: 1; pointer-events: all; }
-
-.s-panel {
-  position: fixed; top: 0; right: 0; bottom: 0;
-  width: min(380px, 92vw);
-  background: var(--panel-bg);
-  z-index: 101;
-  transform: translateX(100%);
-  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-  display: flex; flex-direction: column;
-  box-shadow: -2px 0 24px rgba(0,0,0,0.08);
-}
+.s-panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(400px, 94vw); background: var(--panel-bg); z-index: 101; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.32,0.72,0,1); display: flex; flex-direction: column; box-shadow: -2px 0 24px rgba(0,0,0,0.08); }
 .s-panel.open { transform: translateX(0); }
-
-.panel-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1.15rem 1.4rem; border-bottom: 1px solid var(--border);
-}
-
-.panel-title {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 700; font-size: 1.25rem; color: var(--text);
-}
-
-.close-btn {
-  background: none; border: none; cursor: pointer; color: var(--text-3);
-  padding: 6px; border-radius: 8px; display: flex;
-  align-items: center; justify-content: center;
-  transition: color 0.15s, background 0.15s;
-}
+.panel-head { display: flex; align-items: center; justify-content: space-between; padding: 1.15rem 1.4rem; border-bottom: 1px solid var(--border); }
+.panel-title { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 1.25rem; color: var(--text); }
+.close-btn { background: none; border: none; cursor: pointer; color: var(--text-3); padding: 6px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
 .close-btn:hover, .close-btn:focus-visible { color: var(--text); background: var(--accent-soft); outline: none; }
-
-.panel-body {
-  padding: 1.4rem; flex: 1; overflow-y: auto;
-  display: flex; flex-direction: column; gap: 1.15rem;
-}
-
+.panel-body { padding: 1.4rem; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 1.15rem; }
 .field { display: flex; flex-direction: column; gap: 0.35rem; }
-
-.field-label {
-  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
-  text-transform: uppercase; color: var(--text-2);
-}
-
-.field-input {
-  font-family: 'Nunito', system-ui, sans-serif;
-  font-size: 0.95rem; padding: 0.6rem 0.8rem;
-  border: 1px solid var(--input-border); border-radius: 10px;
-  background: var(--input-bg); color: var(--text); outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
+.field-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); }
+.field-input { font-family: 'Nunito', system-ui, sans-serif; font-size: 0.95rem; padding: 0.6rem 0.8rem; border: 1px solid var(--input-border); border-radius: 10px; background: var(--input-bg); color: var(--text); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
 .field-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .field-input::placeholder { color: var(--text-3); }
 textarea.field-input { resize: vertical; min-height: 72px; line-height: 1.55; }
-
-.save-btn {
-  font-family: 'Nunito', system-ui, sans-serif;
-  font-size: 0.92rem; font-weight: 700; padding: 0.7rem 1.4rem;
-  background: var(--accent); color: #fff; border: none; border-radius: 10px;
-  cursor: pointer; transition: opacity 0.15s, transform 0.1s; margin-top: 0.4rem;
-}
+.save-btn { font-family: 'Nunito', system-ui, sans-serif; font-size: 0.92rem; font-weight: 700; padding: 0.7rem 1.4rem; background: var(--accent); color: #fff; border: none; border-radius: 10px; cursor: pointer; transition: opacity 0.15s, transform 0.1s; margin-top: 0.4rem; }
 .save-btn:hover { opacity: 0.88; }
 .save-btn:active { transform: scale(0.97); }
 .save-btn:disabled { opacity: 0.45; cursor: default; transform: none; }
-
 .save-msg { font-size: 0.82rem; text-align: center; min-height: 1.15em; font-weight: 600; }
 .save-msg.ok { color: var(--accent); }
 .save-msg.err { color: var(--warm); }
 
+/* Admin donations list */
+.admin-divider { border: none; border-top: 1px solid var(--border); margin: 0.5rem 0; }
+.admin-section-title { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 1.1rem; color: var(--text); margin: 0.25rem 0 0.5rem; }
+.admin-donation-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.4rem; border-radius: 8px; }
+.admin-donation-row:nth-child(even) { background: var(--donor-alt); }
+.admin-donation-info { flex: 1; min-width: 0; }
+.admin-donation-name { font-size: 0.82rem; font-weight: 700; color: var(--text); }
+.admin-donation-detail { font-size: 0.75rem; color: var(--text-3); }
+.admin-donation-amount { font-size: 0.85rem; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.delete-btn { width: 28px; height: 28px; border-radius: 6px; border: none; background: var(--danger-soft); color: var(--danger); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: opacity 0.15s; padding: 0; }
+.delete-btn:hover { opacity: 0.7; }
+.delete-btn svg { width: 14px; height: 14px; }
+.admin-empty { font-size: 0.82rem; color: var(--text-3); text-align: center; padding: 0.5rem; }
+
 /* Loading */
-.loading {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; min-height: 55vh; gap: 0.9rem;
-}
-.spinner {
-  width: 36px; height: 36px;
-  border: 3px solid var(--track); border-top-color: var(--accent);
-  border-radius: 50%; animation: spin 0.75s linear infinite;
-}
+.loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 55vh; gap: 0.9rem; }
+.spinner { width: 36px; height: 36px; border: 3px solid var(--track); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-text { color: var(--text-3); font-size: 0.88rem; }
 
-@media (prefers-reduced-motion: reduce) {
-  .gauge-fill-circle, .bar-fill { transition: none; }
-  .spinner { animation-duration: 1.5s; }
-}
-
-@media (max-width: 480px) {
-  body { padding: 1.5rem 0.75rem 4rem; }
-  .gauge-svg { width: 230px; height: 230px; }
-  .raised-amount { font-size: 2.3rem; }
-  .stats-row { gap: 1.8rem; }
-  .stat-value { font-size: 1.35rem; }
-  .chip { padding: 0.45rem 0.8rem; font-size: 0.82rem; }
-}
+@media (prefers-reduced-motion: reduce) { .gauge-fill-circle, .bar-fill { transition: none; } .spinner { animation-duration: 1.5s; } }
+@media (max-width: 480px) { body { padding: 1.5rem 0.75rem 4rem; } .gauge-svg { width: 230px; height: 230px; } .raised-amount { font-size: 2.3rem; } .stats-row { gap: 1.2rem; } .stat-value { font-size: 1.35rem; } .chip { padding: 0.45rem 0.8rem; font-size: 0.82rem; } }
 </style>
 </head>
 <body>
@@ -641,14 +273,9 @@ textarea.field-input { resize: vertical; min-height: 72px; line-height: 1.55; }
   </div>
 
   <div class="stats-row">
-    <div class="stat">
-      <div class="stat-value" id="pctVal">0%</div>
-      <div class="stat-label">Complete</div>
-    </div>
-    <div class="stat">
-      <div class="stat-value" id="remVal">$350</div>
-      <div class="stat-label">Remaining</div>
-    </div>
+    <div class="stat"><div class="stat-value" id="pctVal">0%</div><div class="stat-label">Complete</div></div>
+    <div class="stat"><div class="stat-value" id="donorCount">0</div><div class="stat-label">Donors</div></div>
+    <div class="stat"><div class="stat-value" id="remVal">$350</div><div class="stat-label">Remaining</div></div>
   </div>
 
   <div class="progress-card">
@@ -656,12 +283,9 @@ textarea.field-input { resize: vertical; min-height: 72px; line-height: 1.55; }
       <span class="progress-pct" id="barPct">0% funded</span>
       <span class="progress-amounts" id="barAmt">$0 / $350</span>
     </div>
-    <div class="bar-bg">
-      <div class="bar-fill" id="barFill" style="width:0%"></div>
-    </div>
+    <div class="bar-bg"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
   </div>
 
-  <!-- Donate section -->
   <div class="donate-card">
     <div class="donate-title">Support This Campaign</div>
     <div class="amount-chips">
@@ -672,25 +296,25 @@ textarea.field-input { resize: vertical; min-height: 72px; line-height: 1.55; }
     </div>
     <div class="donate-fields">
       <input class="donate-input" id="donateAmt" type="number" min="1" step="1" placeholder="Custom amount ($)">
-      <input class="donate-input" id="donateName" type="text" placeholder="Your name (optional)" maxlength="60">
+      <input class="donate-input" id="donateName" type="text" placeholder="Your name" maxlength="60">
+      <input class="donate-input" id="donateReason" type="text" placeholder="Reason / dedication (optional)" maxlength="120">
     </div>
     <button class="donate-btn" id="donateBtn">Donate</button>
     <div class="donate-msg" id="donateMsg"></div>
   </div>
 
-  <!-- Recent donors -->
-  <div class="donors-card" id="donorsCard" hidden>
-    <div class="donors-title">Recent Supporters</div>
-    <div id="donorsList"></div>
+  <div id="donorsCard" hidden>
+    <div class="donors-card">
+      <div class="donors-title">Recent Supporters</div>
+      <div id="donorsList"></div>
+    </div>
   </div>
 
-  <!-- Message -->
   <div class="message-card" id="msgCard">
     <p id="msgText">Every contribution brings us closer to our goal. Thank you for your generous support!</p>
   </div>
 </div>
 
-<!-- Settings gear -->
 <button class="settings-btn" id="settingsBtn" hidden aria-label="Settings">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -698,8 +322,7 @@ textarea.field-input { resize: vertical; min-height: 72px; line-height: 1.55; }
   </svg>
 </button>
 
-<!-- Email verification modal -->
-<div class="email-modal-bg" id="emailModal" hidden>
+<div id="emailModal" class="email-modal-bg" hidden>
   <div class="email-modal">
     <h3>Admin Access</h3>
     <input class="email-modal-input" id="emailInput" type="email" placeholder="Enter admin email...">
@@ -711,7 +334,6 @@ textarea.field-input { resize: vertical; min-height: 72px; line-height: 1.55; }
   </div>
 </div>
 
-<!-- Settings panel -->
 <div class="s-overlay" id="overlay"></div>
 <div class="s-panel" id="panel">
   <div class="panel-head">
@@ -721,96 +343,100 @@ textarea.field-input { resize: vertical; min-height: 72px; line-height: 1.55; }
     </button>
   </div>
   <div class="panel-body">
-    <div class="field">
-      <label class="field-label" for="fName">Company Name</label>
-      <input class="field-input" id="fName" type="text" placeholder="Enter company name...">
-    </div>
-    <div class="field">
-      <label class="field-label" for="fGoal">Goal Amount ($)</label>
-      <input class="field-input" id="fGoal" type="number" min="1" step="1" placeholder="350">
-    </div>
-    <div class="field">
-      <label class="field-label" for="fMsg">Campaign Message</label>
-      <textarea class="field-input" id="fMsg" placeholder="A message for your donors..."></textarea>
-    </div>
+    <div class="field"><label class="field-label" for="fName">Company Name</label><input class="field-input" id="fName" type="text" placeholder="Enter company name..."></div>
+    <div class="field"><label class="field-label" for="fGoal">Goal Amount ($)</label><input class="field-input" id="fGoal" type="number" min="1" step="1" placeholder="350"></div>
+    <div class="field"><label class="field-label" for="fMsg">Campaign Message</label><textarea class="field-input" id="fMsg" placeholder="A message for your donors..."></textarea></div>
     <button class="save-btn" id="saveBtn">Save Changes</button>
     <div class="save-msg" id="saveMsg"></div>
+    <hr class="admin-divider">
+    <div class="admin-section-title">Manage Donations</div>
+    <div id="adminDonations"><div class="admin-empty">No donations yet</div></div>
   </div>
 </div>
 
 <script>
-const CIRC = 2 * Math.PI * 112;
-const ADMIN_EMAIL = 'avrumy315@gmail.com';
-const el = id => document.getElementById(id);
+var CIRC = 2 * Math.PI * 112;
+var ADMIN_EMAIL = 'avrumy315@gmail.com';
+var el = function(id) { return document.getElementById(id); };
 
-let db = null;
-let adminVerified = false;
-let donationsList = [];
+var db = null;
+var adminVerified = false;
+var donations = [];
 
-let config = {
+var config = {
   companyName: 'Community Campaign',
   goalAmount: 350,
   message: 'Every contribution brings us closer to our goal. Thank you for your generous support!'
 };
 
-let totalRaised = 0;
+var totalRaised = 0;
 
 function fmt(n) { return n.toLocaleString('en-US'); }
+function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+try { if (localStorage.getItem('campaign_admin') === 'true') adminVerified = true; } catch(e) {}
 
 function renderGauge() {
-  const { companyName, goalAmount, message } = config;
+  el('companyName').textContent = config.companyName || 'Campaign';
 
-  el('companyName').textContent = companyName || 'Campaign';
+  var ratio = config.goalAmount > 0 ? Math.min(totalRaised / config.goalAmount, 1) : 0;
+  var pct = Math.round(ratio * 100);
+  var remaining = Math.max(config.goalAmount - totalRaised, 0);
+  var done = totalRaised >= config.goalAmount && config.goalAmount > 0;
 
-  const ratio = goalAmount > 0 ? Math.min(totalRaised / goalAmount, 1) : 0;
-  const pct = Math.round(ratio * 100);
-  const remaining = Math.max(goalAmount - totalRaised, 0);
-  const done = totalRaised >= goalAmount && goalAmount > 0;
-
-  const fill = el('gaugeFill');
-  fill.setAttribute('stroke-dasharray', (ratio * CIRC) + ' ' + CIRC);
-  fill.classList.toggle('complete', done);
+  el('gaugeFill').setAttribute('stroke-dasharray', (ratio * CIRC) + ' ' + CIRC);
+  el('gaugeFill').classList.toggle('complete', done);
 
   el('raisedAmt').textContent = '$' + fmt(totalRaised);
-  el('goalAmt').textContent = 'of $' + fmt(goalAmount) + ' goal';
+  el('goalAmt').textContent = 'of $' + fmt(config.goalAmount) + ' goal';
   el('pctVal').textContent = pct + '%';
+  el('donorCount').textContent = donations.length;
   el('remVal').textContent = '$' + fmt(remaining);
   el('goalDone').hidden = !done;
 
   el('barPct').textContent = pct + '% funded';
-  el('barAmt').textContent = '$' + fmt(totalRaised) + ' / $' + fmt(goalAmount);
+  el('barAmt').textContent = '$' + fmt(totalRaised) + ' / $' + fmt(config.goalAmount);
   el('barFill').style.width = (ratio * 100) + '%';
 
-  if (message) {
-    el('msgText').textContent = message;
-    el('msgCard').hidden = false;
-  } else {
-    el('msgCard').hidden = true;
-  }
+  if (config.message) { el('msgText').textContent = config.message; el('msgCard').hidden = false; }
+  else { el('msgCard').hidden = true; }
 }
 
 function renderDonors() {
-  const sorted = [...donationsList].sort((a, b) => (b.ts || 0) - (a.ts || 0));
-  const recent = sorted.slice(0, 15);
+  var sorted = donations.slice().sort(function(a, b) { return (b.ts || 0) - (a.ts || 0); });
+  var recent = sorted.slice(0, 20);
 
-  if (recent.length === 0) {
-    el('donorsCard').hidden = true;
-    return;
-  }
-
+  if (recent.length === 0) { el('donorsCard').hidden = true; return; }
   el('donorsCard').hidden = false;
-  el('donorsList').innerHTML = recent.map(d =>
-    '<div class="donor-row">' +
-      '<span class="donor-name">' + escHtml(d.name || 'Anonymous') + '</span>' +
-      '<span class="donor-amount">$' + fmt(d.amount) + '</span>' +
-    '</div>'
-  ).join('');
+
+  el('donorsList').innerHTML = recent.map(function(d) {
+    var reason = d.reason ? '<div class="donor-reason">"' + escHtml(d.reason) + '"</div>' : '';
+    return '<div class="donor-row"><div class="donor-top"><span class="donor-name">' +
+      escHtml(d.name) + '</span><span class="donor-amount">$' + fmt(d.amount) +
+      '</span></div>' + reason + '</div>';
+  }).join('');
 }
 
-function escHtml(s) {
-  var d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
+function renderAdminDonations() {
+  var sorted = donations.slice().sort(function(a, b) { return (b.ts || 0) - (a.ts || 0); });
+  if (sorted.length === 0) {
+    el('adminDonations').innerHTML = '<div class="admin-empty">No donations yet</div>';
+    return;
+  }
+  el('adminDonations').innerHTML = sorted.map(function(d) {
+    var detail = '$' + fmt(d.amount);
+    if (d.reason) detail += ' — ' + escHtml(d.reason);
+    return '<div class="admin-donation-row">' +
+      '<div class="admin-donation-info"><div class="admin-donation-name">' + escHtml(d.name) + '</div>' +
+      '<div class="admin-donation-detail">' + detail + '</div></div>' +
+      '<div class="admin-donation-amount">$' + fmt(d.amount) + '</div>' +
+      '<button class="delete-btn" data-id="' + escHtml(d.id) + '" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>' +
+      '</div>';
+  }).join('');
+}
+
+function recalcTotal() {
+  totalRaised = donations.reduce(function(s, d) { return s + d.amount; }, 0);
 }
 
 function show() {
@@ -819,86 +445,110 @@ function show() {
   el('settingsBtn').hidden = false;
 }
 
-/* Amount chips */
-document.querySelectorAll('.chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+// Amount chips
+document.querySelectorAll('.chip').forEach(function(chip) {
+  chip.addEventListener('click', function() {
+    document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
     chip.classList.add('active');
     el('donateAmt').value = chip.dataset.amount;
   });
 });
-
-el('donateAmt').addEventListener('input', () => {
-  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+el('donateAmt').addEventListener('input', function() {
+  document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
 });
 
-/* Donate */
-el('donateBtn').addEventListener('click', async () => {
-  const amount = Math.max(0, parseFloat(el('donateAmt').value) || 0);
+// Donate
+el('donateBtn').addEventListener('click', async function() {
+  var amount = Math.max(0, parseFloat(el('donateAmt').value) || 0);
+  var name = el('donateName').value.trim();
+  var reason = el('donateReason').value.trim();
+
+  el('donateName').classList.remove('err-border');
+  el('donateAmt').classList.remove('err-border');
+
   if (amount <= 0) {
     el('donateMsg').textContent = 'Please enter an amount';
     el('donateMsg').className = 'donate-msg err';
+    el('donateAmt').classList.add('err-border');
+    return;
+  }
+  if (!name) {
+    el('donateMsg').textContent = 'Please enter your name';
+    el('donateMsg').className = 'donate-msg err';
+    el('donateName').classList.add('err-border');
     return;
   }
 
-  const name = el('donateName').value.trim() || 'Anonymous';
-  const btn = el('donateBtn');
+  var btn = el('donateBtn');
   btn.disabled = true;
   el('donateMsg').textContent = '';
 
-  const donation = { amount: amount, name: name, ts: Date.now() };
+  var donation = { amount: amount, name: name, reason: reason, ts: Date.now() };
 
   if (db) {
     try {
       await db.collection('donations').add(donation);
-      el('donateMsg').textContent = 'Thank you for your donation!';
+      el('donateMsg').textContent = 'Thank you, ' + name + '!';
       el('donateMsg').className = 'donate-msg ok';
-      el('donateAmt').value = '';
-      el('donateName').value = '';
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      el('donateAmt').value = ''; el('donateName').value = ''; el('donateReason').value = '';
+      document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
     } catch (e) {
       el('donateMsg').textContent = 'Could not process — please try again';
       el('donateMsg').className = 'donate-msg err';
     }
   } else {
-    donationsList.push(donation);
-    totalRaised = donationsList.reduce((s, d) => s + d.amount, 0);
-    try { localStorage.setItem('donations', JSON.stringify(donationsList)); } catch(_) {}
-    renderGauge();
-    renderDonors();
-    el('donateMsg').textContent = 'Thank you for your donation!';
+    donation.id = 'local_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    donations.push(donation);
+    recalcTotal();
+    try { localStorage.setItem('donations', JSON.stringify(donations)); } catch(e) {}
+    renderGauge(); renderDonors();
+    el('donateMsg').textContent = 'Thank you, ' + name + '!';
     el('donateMsg').className = 'donate-msg ok';
-    el('donateAmt').value = '';
-    el('donateName').value = '';
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el('donateAmt').value = ''; el('donateName').value = ''; el('donateReason').value = '';
+    document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+    if (el('panel').classList.contains('open')) renderAdminDonations();
   }
 
-  setTimeout(() => { el('donateMsg').textContent = ''; }, 3000);
+  setTimeout(function() { el('donateMsg').textContent = ''; }, 3000);
   btn.disabled = false;
 });
 
-/* Settings — email gate */
-el('settingsBtn').addEventListener('click', () => {
-  if (adminVerified) {
-    openPanel();
+// Delete donation
+document.addEventListener('click', async function(e) {
+  var btn = e.target.closest('.delete-btn');
+  if (!btn) return;
+  var id = btn.dataset.id;
+  if (!id) return;
+
+  btn.disabled = true;
+
+  if (db) {
+    try {
+      await db.doc('donations/' + id).delete();
+    } catch (e) {
+      btn.disabled = false;
+    }
   } else {
-    el('emailModal').hidden = false;
-    el('emailInput').value = '';
-    el('emailErr').textContent = '';
-    el('emailInput').focus();
+    donations = donations.filter(function(d) { return d.id !== id; });
+    recalcTotal();
+    try { localStorage.setItem('donations', JSON.stringify(donations)); } catch(e) {}
+    renderGauge(); renderDonors(); renderAdminDonations();
   }
 });
 
-el('emailCancel').addEventListener('click', () => { el('emailModal').hidden = true; });
-
-el('emailModal').addEventListener('click', e => {
-  if (e.target === el('emailModal')) el('emailModal').hidden = true;
+// Settings — email gate
+el('settingsBtn').addEventListener('click', function() {
+  if (adminVerified) { openPanel(); }
+  else { el('emailModal').hidden = false; el('emailInput').value = ''; el('emailErr').textContent = ''; setTimeout(function() { el('emailInput').focus(); }, 100); }
 });
 
+el('emailCancel').addEventListener('click', function() { el('emailModal').hidden = true; });
+el('emailModal').addEventListener('click', function(e) { if (e.target === el('emailModal')) el('emailModal').hidden = true; });
+
 function verifyEmail() {
-  const typed = el('emailInput').value.trim().toLowerCase();
-  if (typed === ADMIN_EMAIL) {
+  if (el('emailInput').value.trim().toLowerCase() === ADMIN_EMAIL) {
     adminVerified = true;
+    try { localStorage.setItem('campaign_admin', 'true'); } catch(e) {}
     el('emailModal').hidden = true;
     openPanel();
   } else {
@@ -907,119 +557,92 @@ function verifyEmail() {
 }
 
 el('emailVerify').addEventListener('click', verifyEmail);
-el('emailInput').addEventListener('keydown', e => { if (e.key === 'Enter') verifyEmail(); });
+el('emailInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') verifyEmail(); });
 
 function openPanel() {
   el('fName').value = config.companyName || '';
   el('fGoal').value = config.goalAmount || 350;
   el('fMsg').value = config.message || '';
   el('saveMsg').textContent = '';
+  renderAdminDonations();
   el('panel').classList.add('open');
   el('overlay').classList.add('open');
 }
 
-function closePanel() {
-  el('panel').classList.remove('open');
-  el('overlay').classList.remove('open');
-}
-
+function closePanel() { el('panel').classList.remove('open'); el('overlay').classList.remove('open'); }
 el('closeBtn').addEventListener('click', closePanel);
 el('overlay').addEventListener('click', closePanel);
 
-document.addEventListener('keydown', e => {
+document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     if (!el('emailModal').hidden) el('emailModal').hidden = true;
     else if (el('panel').classList.contains('open')) closePanel();
   }
 });
 
-/* Save settings */
-el('saveBtn').addEventListener('click', async () => {
-  const btn = el('saveBtn');
-  btn.disabled = true;
-  el('saveMsg').textContent = '';
-
-  const data = {
+// Save settings
+el('saveBtn').addEventListener('click', async function() {
+  var btn = el('saveBtn'); btn.disabled = true; el('saveMsg').textContent = '';
+  var data = {
     companyName: el('fName').value.trim() || 'Campaign',
     goalAmount: Math.max(1, parseInt(el('fGoal').value) || 350),
     message: el('fMsg').value.trim()
   };
-
   if (db) {
     try {
       await db.doc('config/campaign').set(data);
-      el('saveMsg').textContent = 'Saved successfully';
-      el('saveMsg').className = 'save-msg ok';
-      setTimeout(() => { el('saveMsg').textContent = ''; }, 2500);
+      el('saveMsg').textContent = 'Saved successfully'; el('saveMsg').className = 'save-msg ok';
+      setTimeout(function() { el('saveMsg').textContent = ''; }, 2500);
     } catch (e) {
-      el('saveMsg').textContent = 'Could not save — check permissions';
-      el('saveMsg').className = 'save-msg err';
+      el('saveMsg').textContent = 'Could not save — check permissions'; el('saveMsg').className = 'save-msg err';
     }
   } else {
-    config = { ...config, ...data };
-    try { localStorage.setItem('campaign_config', JSON.stringify(config)); } catch(_) {}
+    Object.assign(config, data);
+    try { localStorage.setItem('campaign_config', JSON.stringify(config)); } catch(e) {}
     renderGauge();
-    el('saveMsg').textContent = 'Saved successfully';
-    el('saveMsg').className = 'save-msg ok';
-    setTimeout(() => { el('saveMsg').textContent = ''; }, 2500);
+    el('saveMsg').textContent = 'Saved successfully'; el('saveMsg').className = 'save-msg ok';
+    setTimeout(function() { el('saveMsg').textContent = ''; }, 2500);
   }
-
   btn.disabled = false;
 });
 
-/* Init */
-(async () => {
+// Init
+(async function() {
   if (window.claude && typeof window.claude.use === 'function') {
-    try { db = await window.claude.use('db'); } catch (_) { db = null; }
+    try { db = await window.claude.use('db'); } catch (e) { db = null; }
   }
 
   if (db) {
     db.doc('config/campaign').onSnapshot(
-      snap => {
+      function(snap) {
         if (snap.exists) {
-          const d = snap.data();
-          config = {
-            companyName: d.companyName || config.companyName,
-            goalAmount: typeof d.goalAmount === 'number' ? d.goalAmount : config.goalAmount,
-            message: typeof d.message === 'string' ? d.message : config.message
-          };
+          var d = snap.data();
+          config.companyName = d.companyName || config.companyName;
+          if (typeof d.goalAmount === 'number') config.goalAmount = d.goalAmount;
+          if (typeof d.message === 'string') config.message = d.message;
         }
-        renderGauge();
-        show();
+        renderGauge(); show();
       },
-      () => { renderGauge(); show(); }
+      function() { renderGauge(); show(); }
     );
 
-    db.collection('donations').orderBy('ts', 'desc').limit(100).onSnapshot(
-      snap => {
-        donationsList = snap.docs
-          .filter(d => d.exists)
-          .map(d => {
-            const data = d.data();
-            return { amount: data.amount || 0, name: data.name || 'Anonymous', ts: data.ts || 0 };
-          });
-        totalRaised = donationsList.reduce((s, d) => s + d.amount, 0);
-        renderGauge();
-        renderDonors();
+    db.collection('donations').orderBy('ts', 'desc').limit(200).onSnapshot(
+      function(snap) {
+        donations = snap.docs.filter(function(d) { return d.exists; }).map(function(d) {
+          var data = d.data();
+          return { id: d.id, amount: data.amount || 0, name: data.name || 'Anonymous', reason: data.reason || '', ts: data.ts || 0 };
+        });
+        recalcTotal(); renderGauge(); renderDonors();
+        if (el('panel').classList.contains('open')) renderAdminDonations();
       },
-      () => {}
+      function() {}
     );
   } else {
-    try {
-      const raw = localStorage.getItem('campaign_config');
-      if (raw) Object.assign(config, JSON.parse(raw));
-    } catch (_) {}
-    try {
-      const raw = localStorage.getItem('donations');
-      if (raw) donationsList = JSON.parse(raw);
-    } catch (_) {}
-    totalRaised = donationsList.reduce((s, d) => s + d.amount, 0);
-    renderGauge();
-    renderDonors();
-    show();
+    try { var r = localStorage.getItem('campaign_config'); if (r) Object.assign(config, JSON.parse(r)); } catch (e) {}
+    try { var r2 = localStorage.getItem('donations'); if (r2) donations = JSON.parse(r2); } catch (e) {}
+    recalcTotal(); renderGauge(); renderDonors(); show();
   }
 })();
 </script>
-
 </body>
 </html>
