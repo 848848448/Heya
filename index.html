@@ -1,5 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Campaign Fund</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
+</head>
+<body>
 
 <style>
 :root {
@@ -586,6 +593,7 @@ textarea.field-input {
 <script>
 const CIRC = 2 * Math.PI * 112;
 const el = id => document.getElementById(id);
+const STORAGE_KEY = 'campaign_config';
 
 let db = null;
 let state = {
@@ -594,6 +602,17 @@ let state = {
   raisedAmount: 0,
   message: 'Every contribution brings us closer to our goal. Thank you for your generous support!'
 };
+
+function loadStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) Object.assign(state, JSON.parse(raw));
+  } catch (_) {}
+}
+
+function saveStorage(data) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (_) {}
+}
 
 function fmt(n) {
   return n.toLocaleString('en-US');
@@ -638,7 +657,6 @@ function show() {
   el('settingsBtn').hidden = false;
 }
 
-/* Settings panel */
 function openPanel() {
   el('fName').value = state.companyName || '';
   el('fGoal').value = state.goalAmount || 350;
@@ -663,12 +681,6 @@ document.addEventListener('keydown', e => {
 });
 
 el('saveBtn').addEventListener('click', async () => {
-  if (!db) {
-    el('saveMsg').textContent = 'Database not available';
-    el('saveMsg').className = 'save-msg err';
-    return;
-  }
-
   const btn = el('saveBtn');
   btn.disabled = true;
   el('saveMsg').textContent = '';
@@ -680,50 +692,59 @@ el('saveBtn').addEventListener('click', async () => {
     message: el('fMsg').value.trim()
   };
 
-  try {
-    await db.doc('config/campaign').set(data);
+  if (db) {
+    try {
+      await db.doc('config/campaign').set(data);
+      el('saveMsg').textContent = 'Saved successfully';
+      el('saveMsg').className = 'save-msg ok';
+      setTimeout(() => { el('saveMsg').textContent = ''; }, 2500);
+    } catch (e) {
+      const txt = (e && e.code === 'invalid_argument')
+        ? 'Only admins can edit settings'
+        : 'Could not save — try again';
+      el('saveMsg').textContent = txt;
+      el('saveMsg').className = 'save-msg err';
+    }
+  } else {
+    saveStorage(data);
+    render(data);
     el('saveMsg').textContent = 'Saved successfully';
     el('saveMsg').className = 'save-msg ok';
     setTimeout(() => { el('saveMsg').textContent = ''; }, 2500);
-  } catch (e) {
-    const txt = (e && e.code === 'invalid_argument')
-      ? 'Only admins can edit settings'
-      : 'Could not save — try again';
-    el('saveMsg').textContent = txt;
-    el('saveMsg').className = 'save-msg err';
   }
 
   btn.disabled = false;
 });
 
-/* Init */
 (async () => {
-  try {
-    db = await window.claude.use('db');
-  } catch (_) { db = null; }
-
-  if (!db) {
-    render(state);
-    show();
-    return;
+  if (window.claude && typeof window.claude.use === 'function') {
+    try { db = await window.claude.use('db'); } catch (_) { db = null; }
   }
 
-  db.doc('config/campaign').onSnapshot(
-    snap => {
-      if (snap.exists) {
-        const d = snap.data();
-        render({
-          companyName: d.companyName || state.companyName,
-          goalAmount: typeof d.goalAmount === 'number' ? d.goalAmount : state.goalAmount,
-          raisedAmount: typeof d.raisedAmount === 'number' ? d.raisedAmount : state.raisedAmount,
-          message: typeof d.message === 'string' ? d.message : state.message
-        });
-      } else {
-        render(state);
-      }
-      show();
-    },
-    () => { render(state); show(); }
-  );
+  if (db) {
+    db.doc('config/campaign').onSnapshot(
+      snap => {
+        if (snap.exists) {
+          const d = snap.data();
+          render({
+            companyName: d.companyName || state.companyName,
+            goalAmount: typeof d.goalAmount === 'number' ? d.goalAmount : state.goalAmount,
+            raisedAmount: typeof d.raisedAmount === 'number' ? d.raisedAmount : state.raisedAmount,
+            message: typeof d.message === 'string' ? d.message : state.message
+          });
+        } else {
+          render(state);
+        }
+        show();
+      },
+      () => { render(state); show(); }
+    );
+  } else {
+    loadStorage();
+    render(state);
+    show();
+  }
 })();
 </script>
+</body>
+</html>
