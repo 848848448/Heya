@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campaign Fund</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito:wght@400;500;600;700;800&display=swap">
+</head>
+<body>
+
+<style>
+:root {
+  --bg: #F5F0E6;
+  --surface: #FFFFFF;
+  --text: #1B3B4A;
+  --text-2: #5A7282;
+  --text-3: #93A3AD;
+  --accent: #2D8E7B;
+  --accent-soft: #E4F2EE;
+  --gold: #C9A23D;
+  --gold-glow: rgba(201,162,61,0.25);
+  --warm: #E07B5F;
+  --warm-hover: #CC6A4E;
+  --border: #DDD7CA;
+  --track: #E5DFD2;
+  --fill: #2D8E7B;
+  --shadow-sm: 0 1px 3px rgba(27,59,74,0.06);
+  --shadow-md: 0 4px 14px rgba(27,59,74,0.08);
+  --shadow-lg: 0 8px 30px rgba(27,59,74,0.12);
+  --panel-bg: #FAF7F0;
+  --overlay: rgba(27,59,74,0.22);
+  --input-bg: #FFFFFF;
+  --input-border: #D5CFC3;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111920;
+    --surface: #1A242C;
+    --text: #E4DFD4;
+    --text-2: #97A5AE;
+    --text-3: #5E6E77;
+    --accent: #4CC4AF;
+    --accent-soft: #1A302C;
+    --gold: #DEB94E;
+    --gold-glow: rgba(222,185,78,0.2);
+    --warm: #E8876D;
+    --warm-hover: #F0997F;
+    --border: #263038;
+    --track: #253038;
+    --fill: #4CC4AF;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+    --shadow-md: 0 4px 14px rgba(0,0,0,0.25);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.35);
+    --panel-bg: #15202A;
+    --overlay: rgba(0,0,0,0.45);
+    --input-bg: #1E2A33;
+    --input-border: #2E3C45;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #111920;
+  --surface: #1A242C;
+  --text: #E4DFD4;
+  --text-2: #97A5AE;
+  --text-3: #5E6E77;
+  --accent: #4CC4AF;
+  --accent-soft: #1A302C;
+  --gold: #DEB94E;
+  --gold-glow: rgba(222,185,78,0.2);
+  --warm: #E8876D;
+  --warm-hover: #F0997F;
+  --border: #263038;
+  --track: #253038;
+  --fill: #4CC4AF;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 14px rgba(0,0,0,0.25);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.35);
+  --panel-bg: #15202A;
+  --overlay: rgba(0,0,0,0.45);
+  --input-bg: #1E2A33;
+  --input-border: #2E3C45;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 2.5rem 1rem 4rem;
+}
+
+.container {
+  max-width: 520px;
+  width: 100%;
+}
+
+/* Header ornament */
+.ornament {
+  text-align: center;
+  margin: 0 0 1.5rem;
+  color: var(--text-3);
+  font-size: 1.2rem;
+  letter-spacing: 0.5em;
+  user-select: none;
+}
+
+.company-name {
+  font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 7vw, 3.2rem);
+  text-align: center;
+  color: var(--text);
+  line-height: 1.15;
+  text-wrap: balance;
+  margin: 0 0 0.35rem;
+}
+
+.campaign-label {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 2.5rem;
+}
+
+/* Gauge */
+.gauge-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 1.5rem;
+  position: relative;
+}
+
+.gauge-svg {
+  width: 270px;
+  height: 270px;
+}
+
+.gauge-track-circle {
+  fill: none;
+  stroke: var(--track);
+  stroke-width: 16;
+}
+
+.gauge-fill-circle {
+  fill: none;
+  stroke: var(--fill);
+  stroke-width: 16;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dasharray 1.4s cubic-bezier(0.23, 1, 0.32, 1),
+              stroke 0.5s ease;
+}
+
+.gauge-fill-circle.complete {
+  stroke: var(--gold);
+  filter: drop-shadow(0 0 8px var(--gold-glow));
+}
+
+.gauge-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.raised-amount {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 700;
+  font-size: 2.8rem;
+  line-height: 1;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.raised-label {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+
+.goal-text {
+  font-size: 0.82rem;
+  color: var(--text-3);
+  margin-top: 0.45rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.celebration {
+  color: var(--gold);
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 0.3rem;
+}
+
+/* Stats row */
+.stats-row {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  margin: 0 0 2rem;
+}
+
+.stat { text-align: center; }
+
+.stat-value {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.6rem;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--text-3);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.1rem;
+}
+
+/* Progress bar card */
+.progress-card {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 1.25rem 1.4rem;
+  box-shadow: var(--shadow-sm);
+  margin: 0 0 1.25rem;
+  border: 1px solid var(--border);
+}
+
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0 0 0.6rem;
+}
+
+.progress-pct {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
+.progress-amounts {
+  font-size: 0.78rem;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar-bg {
+  height: 10px;
+  background: var(--track);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  border-radius: 5px;
+  transition: width 1.4s cubic-bezier(0.23, 1, 0.32, 1);
+  min-width: 0;
+}
+
+/* Message card */
+.message-card {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 1.4rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.message-card p {
+  color: var(--text-2);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* Settings button */
+.settings-btn {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  transition: transform 0.25s, box-shadow 0.25s, color 0.2s;
+  z-index: 10;
+  padding: 0;
+}
+
+.settings-btn:hover, .settings-btn:focus-visible {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-lg);
+  color: var(--text-2);
+  outline: none;
+}
+
+.settings-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Settings overlay + panel */
+.s-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay);
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.s-overlay.open { opacity: 1; pointer-events: all; }
+
+.s-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(380px, 92vw);
+  background: var(--panel-bg);
+  z-index: 101;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: -2px 0 24px rgba(0,0,0,0.08);
+}
+
+.s-panel.open { transform: translateX(0); }
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.15rem 1.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-3);
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.close-btn:hover, .close-btn:focus-visible {
+  color: var(--text);
+  background: var(--accent-soft);
+  outline: none;
+}
+
+.panel-body {
+  padding: 1.4rem;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.field { display: flex; flex-direction: column; gap: 0.35rem; }
+
+.field-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.field-input {
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-size: 0.95rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--input-border);
+  border-radius: 10px;
+  background: var(--input-bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.field-input::placeholder { color: var(--text-3); }
+
+textarea.field-input {
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.55;
+}
+
+.save-btn {
+  font-family: 'Nunito', system-ui, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 0.7rem 1.4rem;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  margin-top: 0.4rem;
+}
+
+.save-btn:hover { opacity: 0.88; }
+.save-btn:active { transform: scale(0.97); }
+.save-btn:disabled { opacity: 0.45; cursor: default; transform: none; }
+
+.save-msg {
+  font-size: 0.82rem;
+  text-align: center;
+  min-height: 1.15em;
+  font-weight: 600;
+}
+
+.save-msg.ok { color: var(--accent); }
+.save-msg.err { color: var(--warm); }
+
+/* Loading */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 55vh;
+  gap: 0.9rem;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--track);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text { color: var(--text-3); font-size: 0.88rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gauge-fill-circle,
+  .bar-fill { transition: none; }
+  .spinner { animation-duration: 1.5s; }
+}
+
+@media (max-width: 480px) {
+  body { padding: 1.5rem 0.75rem 4rem; }
+  .gauge-svg { width: 230px; height: 230px; }
+  .raised-amount { font-size: 2.3rem; }
+  .stats-row { gap: 1.8rem; }
+  .stat-value { font-size: 1.35rem; }
+}
+</style>
+
+<div id="loading" class="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Loading campaign...</div>
+</div>
+
+<div id="main" class="container" hidden>
+  <div class="ornament" aria-hidden="true">&#x2726; &#x2726; &#x2726;</div>
+  <h1 class="company-name" id="companyName">Campaign</h1>
+  <div class="campaign-label">Community Fundraiser</div>
+
+  <div class="gauge-wrap">
+    <svg class="gauge-svg" viewBox="0 0 270 270" aria-hidden="true">
+      <circle class="gauge-track-circle" cx="135" cy="135" r="112" />
+      <circle class="gauge-fill-circle" id="gaugeFill" cx="135" cy="135" r="112"
+              stroke-dasharray="0 703.72" />
+    </svg>
+    <div class="gauge-center">
+      <div class="raised-amount" id="raisedAmt">$0</div>
+      <div class="raised-label">raised</div>
+      <div class="goal-text" id="goalAmt">of $350 goal</div>
+      <div class="celebration" id="goalDone" hidden>Goal Reached!</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-value" id="pctVal">0%</div>
+      <div class="stat-label">Complete</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="remVal">$350</div>
+      <div class="stat-label">Remaining</div>
+    </div>
+  </div>
+
+  <div class="progress-card">
+    <div class="progress-row">
+      <span class="progress-pct" id="barPct">0% funded</span>
+      <span class="progress-amounts" id="barAmt">$0 / $350</span>
+    </div>
+    <div class="bar-bg">
+      <div class="bar-fill" id="barFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="message-card" id="msgCard">
+    <p id="msgText">Every contribution brings us closer to our goal. Thank you for your generous support!</p>
+  </div>
+</div>
+
+<button class="settings-btn" id="settingsBtn" hidden aria-label="Open settings">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+    <circle cx="12" cy="12" r="3"/>
+  </svg>
+</button>
+
+<div class="s-overlay" id="overlay"></div>
+<div class="s-panel" id="panel">
+  <div class="panel-head">
+    <span class="panel-title">Settings</span>
+    <button class="close-btn" id="closeBtn" aria-label="Close settings">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="panel-body">
+    <div class="field">
+      <label class="field-label" for="fName">Company Name</label>
+      <input class="field-input" id="fName" type="text" placeholder="Enter company name...">
+    </div>
+    <div class="field">
+      <label class="field-label" for="fGoal">Goal Amount ($)</label>
+      <input class="field-input" id="fGoal" type="number" min="1" step="1" placeholder="350">
+    </div>
+    <div class="field">
+      <label class="field-label" for="fRaised">Amount Raised ($)</label>
+      <input class="field-input" id="fRaised" type="number" min="0" step="1" placeholder="0">
+    </div>
+    <div class="field">
+      <label class="field-label" for="fMsg">Campaign Message</label>
+      <textarea class="field-input" id="fMsg" placeholder="A message for your donors..."></textarea>
+    </div>
+    <button class="save-btn" id="saveBtn">Save Changes</button>
+    <div class="save-msg" id="saveMsg"></div>
+  </div>
+</div>
+
+<script>
+const CIRC = 2 * Math.PI * 112;
+const el = id => document.getElementById(id);
+const STORAGE_KEY = 'campaign_config';
+
+let db = null;
+let state = {
+  companyName: 'Community Campaign',
+  goalAmount: 350,
+  raisedAmount: 0,
+  message: 'Every contribution brings us closer to our goal. Thank you for your generous support!'
+};
+
+function loadStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) Object.assign(state, JSON.parse(raw));
+  } catch (_) {}
+}
+
+function saveStorage(data) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (_) {}
+}
+
+function fmt(n) {
+  return n.toLocaleString('en-US');
+}
+
+function render(d) {
+  Object.assign(state, d);
+  const { companyName, goalAmount, raisedAmount, message } = state;
+
+  el('companyName').textContent = companyName || 'Campaign';
+
+  const ratio = goalAmount > 0 ? Math.min(raisedAmount / goalAmount, 1) : 0;
+  const pct = Math.round(ratio * 100);
+  const remaining = Math.max(goalAmount - raisedAmount, 0);
+  const done = raisedAmount >= goalAmount && goalAmount > 0;
+
+  const fill = el('gaugeFill');
+  fill.setAttribute('stroke-dasharray', (ratio * CIRC) + ' ' + CIRC);
+  fill.classList.toggle('complete', done);
+
+  el('raisedAmt').textContent = '$' + fmt(raisedAmount);
+  el('goalAmt').textContent = 'of $' + fmt(goalAmount) + ' goal';
+  el('pctVal').textContent = pct + '%';
+  el('remVal').textContent = '$' + fmt(remaining);
+  el('goalDone').hidden = !done;
+
+  el('barPct').textContent = pct + '% funded';
+  el('barAmt').textContent = '$' + fmt(raisedAmount) + ' / $' + fmt(goalAmount);
+  el('barFill').style.width = (ratio * 100) + '%';
+
+  if (message) {
+    el('msgText').textContent = message;
+    el('msgCard').hidden = false;
+  } else {
+    el('msgCard').hidden = true;
+  }
+}
+
+function show() {
+  el('loading').hidden = true;
+  el('main').hidden = false;
+  el('settingsBtn').hidden = false;
+}
+
+function openPanel() {
+  el('fName').value = state.companyName || '';
+  el('fGoal').value = state.goalAmount || 350;
+  el('fRaised').value = state.raisedAmount || 0;
+  el('fMsg').value = state.message || '';
+  el('saveMsg').textContent = '';
+  el('panel').classList.add('open');
+  el('overlay').classList.add('open');
+}
+
+function closePanel() {
+  el('panel').classList.remove('open');
+  el('overlay').classList.remove('open');
+}
+
+el('settingsBtn').addEventListener('click', openPanel);
+el('closeBtn').addEventListener('click', closePanel);
+el('overlay').addEventListener('click', closePanel);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && el('panel').classList.contains('open')) closePanel();
+});
+
+el('saveBtn').addEventListener('click', async () => {
+  const btn = el('saveBtn');
+  btn.disabled = true;
+  el('saveMsg').textContent = '';
+
+  const data = {
+    companyName: el('fName').value.trim() || 'Campaign',
+    goalAmount: Math.max(1, parseInt(el('fGoal').value) || 350),
+    raisedAmount: Math.max(0, parseFloat(el('fRaised').value) || 0),
+    message: el('fMsg').value.trim()
+  };
+
+  if (db) {
+    try {
+      await db.doc('config/campaign').set(data);
+      el('saveMsg').textContent = 'Saved successfully';
+      el('saveMsg').className = 'save-msg ok';
+      setTimeout(() => { el('saveMsg').textContent = ''; }, 2500);
+    } catch (e) {
+      const txt = (e && e.code === 'invalid_argument')
+        ? 'Only admins can edit settings'
+        : 'Could not save — try again';
+      el('saveMsg').textContent = txt;
+      el('saveMsg').className = 'save-msg err';
+    }
+  } else {
+    saveStorage(data);
+    render(data);
+    el('saveMsg').textContent = 'Saved successfully';
+    el('saveMsg').className = 'save-msg ok';
+    setTimeout(() => { el('saveMsg').textContent = ''; }, 2500);
+  }
+
+  btn.disabled = false;
+});
+
+(async () => {
+  if (window.claude && typeof window.claude.use === 'function') {
+    try { db = await window.claude.use('db'); } catch (_) { db = null; }
+  }
+
+  if (db) {
+    db.doc('config/campaign').onSnapshot(
+      snap => {
+        if (snap.exists) {
+          const d = snap.data();
+          render({
+            companyName: d.companyName || state.companyName,
+            goalAmount: typeof d.goalAmount === 'number' ? d.goalAmount : state.goalAmount,
+            raisedAmount: typeof d.raisedAmount === 'number' ? d.raisedAmount : state.raisedAmount,
+            message: typeof d.message === 'string' ? d.message : state.message
+          });
+        } else {
+          render(state);
+        }
+        show();
+      },
+      () => { render(state); show(); }
+    );
+  } else {
+    loadStorage();
+    render(state);
+    show();
+  }
+})();
+</script>
+</body>
+</html>
